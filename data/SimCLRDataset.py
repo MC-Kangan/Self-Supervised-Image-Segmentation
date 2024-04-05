@@ -21,7 +21,8 @@ def preprocess(dataset: Dataset, device: torch.device) -> Dataset:
     - Dataset: A dataset with the specified example removed and all data formatted as PyTorch tensors, ready for model training or inference.
     """
     def filter_out_example(example, index):
-        return index != 4376 
+        # return index != 4376 
+        return index not in [4376, 7237, 8915, 14892, 14907, 17021, 19523, 22462]
     filtered_dataset = dataset.filter(filter_out_example, with_indices=True)
     filtered_dataset = filtered_dataset.with_format("torch", device = device)
     return filtered_dataset
