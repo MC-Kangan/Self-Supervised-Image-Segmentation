@@ -16,7 +16,7 @@ from fine_tune_utils import *
 
 import time
 import json
-
+import sys
 
 
 
@@ -243,11 +243,14 @@ def train_segmentation_model(model, train_loader, val_loader, save_path = 'model
 if __name__ == "__main__":
     
     
-    # IMPORTANT TRAINING SETTING 
-
-    PRETRAIN_DATASET = 'cifar'
+    # IMPORTANT TRAINING SETTING FROM USER INPUT
     LOSS_FUNC = 'BCE'
-    DEV_SIZE = 20
+    PRETRAIN_DATASET = sys.argv[1]
+    DEV_SIZE = sys.argv[2]
+    
+    # PRETRAIN_DATASET = 'cifar'
+    # DEV_SIZE = 20
+    
     SAVE_PATH = 'models'
     device = torch.device("cuda" if torch.cuda.is_available() else ("mps" if torch.backends.mps.is_available() else "cpu")) 
 
@@ -263,11 +266,11 @@ if __name__ == "__main__":
 
     dataset = OxfordPetsDataset(images_dir='images', masks_dir='annotations/trimaps', transform=transform, mask_transform=mask_transform)
     
-    if DEV_SIZE == 80:
+    if int(DEV_SIZE) == 80:
         train_loader, test_loader, val_loader = data_split(dataset, ignore_size = 0)
-    elif DEV_SIZE == 50:
+    elif int(DEV_SIZE) == 50:
         train_loader, test_loader, val_loader = data_split(dataset, ignore_size = 0.3)
-    elif DEV_SIZE == 20:
+    elif int(DEV_SIZE) == 20:
         train_loader, test_loader, val_loader = data_split(dataset, ignore_size = 0.6)
 
 
@@ -281,9 +284,13 @@ if __name__ == "__main__":
 
     if PRETRAIN_DATASET == 'pet':
     # Load the weights into the model
-        model.load_state_dict(torch.load("pretrain_model/pet_simclr_backbone.ckpt", map_location=torch.device(device)), strict=False)
+        relative_model_path = '../pretrain_model/pet_simclr_backbone.ckpt'
+        full_model_path = os.path.join(os.getcwd(), relative_model_path)
+        model.load_state_dict(torch.load(full_model_path, map_location=torch.device(device)), strict=False)
     elif PRETRAIN_DATASET == 'cifar':
-        model.load_state_dict(torch.load("pretrain_model/cifar_simclr_backbone.ckpt", map_location=torch.device(device)), strict=False)
+        relative_model_path = '../pretrain_model/cifar_simclr_backbone.ckpt'
+        full_model_path = os.path.join(os.getcwd(), relative_model_path)
+        model.load_state_dict(torch.load(full_model_path, map_location=torch.device(device)), strict=False)
     else: # baseline
         pass
     
