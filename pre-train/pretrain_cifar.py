@@ -323,6 +323,8 @@ if __name__ == '__main__':
     model = model.to(device)  # this is the model you want to save for pre-training, where f(.) is the ResNet-50
     simclr_model = simclr_model.to(device)
     # Simple transform for the original CIFAR-10 dataset and resize the images to 224x224
+    image_height = 224
+    image_width = 224
     transform = transforms.Compose([
         transforms.Resize((image_height, image_width)),
         transforms.ToTensor()
