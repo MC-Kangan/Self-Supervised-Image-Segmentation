@@ -3,8 +3,14 @@ from typing import List, Tuple, Dict, Optional
 from matplotlib.figure import Figure
 from matplotlib.axes import Axes
 import numpy as np
+import json
 
-def plot_metrics(train_metrics: List[float], eval_metrics: List[float], metric_name: str = "Loss", 
+def preprocess_results(result: Dict[str, List[float]]) -> Dict[str, List[float]]:
+    result['BCE'] = (np.array(result['batch_loss']).reshape(60, -1).mean(axis = 1), result['BCE'])
+    result.pop('batch_loss')
+    return result
+
+def plot_metrics(eval_metrics: List[float], train_metrics: Optional[List[float]] = None, metric_name: str = "Loss", eval_epochs: Optional[List[int]] = None,
                  ax: Optional[Axes] = None, figsize: Tuple[int, int] = (10, 6), dpi: int = 100) -> Figure:
     """
     Plots training and evaluation metrics on a given or new matplotlib axis.
@@ -22,8 +28,11 @@ def plot_metrics(train_metrics: List[float], eval_metrics: List[float], metric_n
     else:
         fig = ax.figure
     
-    ax.plot(train_metrics, label=f'Train {metric_name}')
-    ax.plot(eval_metrics, label=f'Eval {metric_name}')
+    if eval_epochs is None:
+        eval_epochs = range(len(eval_metrics))
+    ax.plot(eval_epochs, eval_metrics, label=f'Eval {metric_name}')
+    if train_metrics is not None:
+        ax.plot(train_metrics, label=f'Train {metric_name}')
     ax.set_xlabel('Epoch')
     ax.set_ylabel(metric_name)
     ax.set_title(f'Train vs. Eval {metric_name}')
@@ -31,8 +40,8 @@ def plot_metrics(train_metrics: List[float], eval_metrics: List[float], metric_n
     return fig
 
 
-def plot_all_metrics(metrics_data: Dict[str, List[int]], fig_title: str,
-                     cols: int=2, figsize: Tuple[int]=(14, 7), dpi: int=100):
+def plot_all_metrics(metrics_data: Dict[str, List[int]], fig_title: str, eval_epochs: Optional[List[int]] = None,
+                     cols: int=2, figsize: Tuple[int]=(14, 7), dpi: int=100) -> Figure:
     """
     Creates a grid of subplots for multiple metrics using the plot_metrics function.
 
@@ -49,8 +58,17 @@ def plot_all_metrics(metrics_data: Dict[str, List[int]], fig_title: str,
     # Flatten axs for easy iteration, in case of single row
     axs = axs.flatten()
 
-    for ax, (metric_name, (train_metrics, eval_metrics)) in zip(axs, metrics_data.items()):
-        plot_metrics(train_metrics, eval_metrics, metric_name=metric_name, ax=ax)
+    for ax, (metric_name, metrics) in zip(axs, metrics_data.items()):
+        if isinstance(metrics, tuple):
+            train_metrics, eval_metrics = metrics
+        else:
+            train_metrics = None
+            eval_metrics = metrics
+        plot_metrics(eval_metrics, train_metrics, eval_epochs=eval_epochs, metric_name=metric_name, ax=ax)
+        
+    # for ax, (metric_name, data) in zip(axs, metrics_data.items()):
+    #     plot_metrics()
+            
 
     # If there are any remaining subplots, hide them
     for i in range(len(metrics_data), len(axs)):
@@ -93,3 +111,13 @@ def plot_confusion_matrix(tp: int, fp: int, tn: int, fn: int, name: str,
         ax.text(j, i, f'{val}', ha='center', va='center', color='black')
     
     return fig
+                            
+# example usage
+with open('baseline_BCE_50.json', 'r') as file:
+    metrics_data = json.load(file)
+
+metrics_data = preprocess_results(metrics_data)
+eval_epochs = range(1,60,2)
+# plotting all metrics using plot_all_metrics
+fig_all = plot_all_metrics(metrics_data, eval_epochs=eval_epochs, fig_title="Training Evaluation Metrics")
+plt.show()
