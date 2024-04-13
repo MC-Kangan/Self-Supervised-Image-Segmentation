@@ -2,29 +2,27 @@
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.optim as optim
 import torch.nn.functional as F
 # Import torch vision
-import torchvision
 import torchvision.transforms as transforms
-import torchvision.datasets as datasets
 import json
 import os 
 import re
-from torch.utils.data import DataLoader
 # Import resnet50 model from torchvision
 from torchvision.models import resnet50
 from torch.optim.optimizer import Optimizer, required
 # Import the dataset from huggingface
 # pip install datasets
-from datasets import load_dataset, Dataset
+from datasets import load_dataset
+from datasets import Dataset as hf_Dataset
+from torch.utils.data import Dataset, DataLoader
 from typing import Tuple
 
 
 """
 Function for loading the dataset
-"""
-def preprocess(dataset: Dataset, device: torch.device) -> Dataset:
+""" 
+def preprocess(dataset: hf_Dataset, device: torch.device) -> Dataset:
     """
     Preprocesses the input dataset by filtering out a specific example and setting the format to PyTorch tensors.
 
@@ -92,16 +90,7 @@ class SimClrData(Dataset):
         image_2 = self.data_transforms(image)
         
         return image_1, image_2
-
-def get_color_distortion(s=1.0):
-    # s is the strength of color distortion.
-    color_jitter = transforms.ColorJitter(0.8*s, 0.8*s, 0.8*s, 0.2*s)
-    rnd_color_jitter = transforms.RandomApply([color_jitter], p=0.8)
-    rnd_gray = transforms.RandomGrayscale(p=0.2)
-    color_distort = transforms.Compose([
-    rnd_color_jitter,
-    rnd_gray])
-    return color_distort
+        
 """
 Function for training the model (loss function and optimizer)
 """
