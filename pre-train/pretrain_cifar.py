@@ -109,12 +109,12 @@ Function for training the model (loss function and optimizer)
 def nt_xent_loss(queries, keys, temperature = 0.1):
     b, device = queries.shape[0], queries.device
 
-    n = b * 2  # 同一图片内部不同patch也是负样本
+    n = b * 2  # Different patches within the same image are also negative samples
     projs = torch.cat((queries, keys))
     logits = projs @ projs.t()
 
     mask = torch.eye(n, device=device).bool()
-    logits = logits[~mask].reshape(n, n - 1)  # 同一图片内部不同patch也是负样本，除了自己和自己
+    logits = logits[~mask].reshape(n, n - 1)  # Different patches within the same image are also negative samples, except for themselves
     logits /= temperature
 
     labels = torch.cat(((torch.arange(b, device = device) + b - 1), torch.arange(b, device=device)), dim=0)
