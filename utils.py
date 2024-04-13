@@ -19,6 +19,7 @@ def plot_metrics(eval_metrics: List[float], train_metrics: Optional[List[float]]
     - train_metrics (List[float]): List of training metric values.
     - eval_metrics (List[float]): List of evaluation metric values.
     - metric_name (str): Name of the metric being plotted. Defaults to "Loss".
+    - eval_epochs (List[int]): List of evaluation epochs like [1,3,..59]
     - ax (Optional[Axes]): Matplotlib Axes object to plot on. If None, creates a new figure and axes. Defaults to None.
     - figsize (Tuple[int, int]): Figure size for the new figure if ax is None. Defaults to (10, 6).
     - dpi (int): Dots per inch for the figure's resolution if ax is None. Defaults to 100.
@@ -47,6 +48,8 @@ def plot_all_metrics(metrics_data: Dict[str, List[int]], fig_title: str, eval_ep
 
     Parameters:
     - metrics_data: Dictionary with metric names as keys and tuples of (train_metrics, eval_metrics) as values.
+    - fig_title: global title of the figure
+    - eval_epochs (List[int]): List of evaluation epochs like [1,3,..59]
     - cols: Number of columns in the subplot grid.
     - figsize: Figure size for the entire grid.
     - dpi: Resolution in dots per inch.
@@ -66,10 +69,6 @@ def plot_all_metrics(metrics_data: Dict[str, List[int]], fig_title: str, eval_ep
             eval_metrics = metrics
         plot_metrics(eval_metrics, train_metrics, eval_epochs=eval_epochs, metric_name=metric_name, ax=ax)
         
-    # for ax, (metric_name, data) in zip(axs, metrics_data.items()):
-    #     plot_metrics()
-            
-
     # If there are any remaining subplots, hide them
     for i in range(len(metrics_data), len(axs)):
         fig.delaxes(axs[i])

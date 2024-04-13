@@ -1,15 +1,10 @@
 import torch
-from datasets import load_dataset, Dataset
-from torch.utils.data import Dataset, DataLoader
-import numpy as np 
+from datasets import Dataset as hf_Dataset
+from torch.utils.data import Dataset
 from typing import Tuple
 from torchvision import transforms
-
-# def set_seed(seed: int) -> None:
-#     np.random.seed(seed)
-#     torch.manual_seed(seed)
     
-def preprocess(dataset: Dataset, device: torch.device) -> Dataset:
+def preprocess(dataset: hf_Dataset, device: torch.device) -> Dataset:
     """
     Preprocesses the input dataset by filtering out a specific example and setting the format to PyTorch tensors.
 
