@@ -35,6 +35,9 @@ To fine-tune the models, first make sure the pretrained backbones are placed in 
 
 ```bash
 cd fine-tune
+mkdir models
+mkdir models/model_files
+mkdir models/json_result
 
 # Download data
 !wget http://www.robots.ox.ac.uk/~vgg/data/pets/data/images.tar.gz
@@ -59,6 +62,9 @@ Then, navigate back to the root folder of the project, and we can fine-tune the 
 ```bash
 # Examples
 
+# Users need to specify which model to run with 3 choices (pet, cifar, baseline)
+# Users also need to determine how much data are used for fine-tuning (20, 50, 80)
+
 python fine-tune/fine_tune.py pet 20
 # Fine-tune the model pretrained on cats vs dogs, with 20% of finetuning data used
 
@@ -70,3 +76,13 @@ python fine-tune/fine_tune.py baseline 80
 ```
 
 The resulted model will be saved in `fine-tune/models`.
+
+## Evaluate
+To evaluate the model's performance on the test dataset. We first go to the fine-tune folder.
+```bash
+cd fine-tune
+mkdir results
+
+# Run the evaluate script, which will run tests on all the models files that are previously saved.
+python evaluate.py
+```
