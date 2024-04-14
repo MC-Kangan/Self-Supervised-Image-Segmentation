@@ -40,12 +40,12 @@ mkdir models/model_files
 mkdir models/json_result
 
 # Download data
-!wget http://www.robots.ox.ac.uk/~vgg/data/pets/data/images.tar.gz
-!wget http://www.robots.ox.ac.uk/~vgg/data/pets/data/annotations.tar.gz
+wget http://www.robots.ox.ac.uk/~vgg/data/pets/data/images.tar.gz
+wget http://www.robots.ox.ac.uk/~vgg/data/pets/data/annotations.tar.gz
 
 # Unzip data
-!tar zxvf images.tar.gz
-!tar zxvf annotations.tar.gz
+tar zxvf images.tar.gz
+tar zxvf annotations.tar.gz
 
 # Delete unused files in the dataset
 cd annotations/trimaps
@@ -60,24 +60,25 @@ find . -type f -name '*.mat' -exec rm {} +
 Then, navigate back to the root folder of the project, and we can fine-tune the models. Here, you can choose to fine-tune on the model pretrained with `pet` or `cifar` dataset, or `baseline` to skip pretraining, and what percentage of fine-tuning data to use.
 
 ```bash
-# Examples
+
+cd fine-tune
 
 # Users need to specify which model to run with 3 choices (pet, cifar, baseline)
 # Users also need to determine how much data are used for fine-tuning (20, 50, 80)
 
-python fine-tune/fine_tune.py pet 20
+python fine_tune.py pet 20
 # Fine-tune the model pretrained on cats vs dogs, with 20% of finetuning data used
 
-python fine-tune/fine_tune.py cifar 50
+python fine_tune.py cifar 50
 # Fine-tune the model pretrained on cifar-10, with 50% of finetuning data used
 
-python fine-tune/fine_tune.py baseline 80
+python fine_tune.py baseline 80
 # Fine-tune the model without pretraining, with 80% of finetuning data used
 ```
 
 The resulted model will be saved in `fine-tune/models`.
 
-## Evaluate
+## Evaluation
 To evaluate the model's performance on the test dataset. We first go to the fine-tune folder.
 ```bash
 cd fine-tune
