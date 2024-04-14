@@ -219,12 +219,12 @@ def train_segmentation_model(model, train_loader, val_loader, save_path = 'model
                   'model_state_dict': model.state_dict(),
                   'optimizer_state_dict': optimizer.state_dict(),
                   'loss': batch_loss_values[-1],  # Last batch loss of the epoch
-              }, f'{save_path}/{model_name}.pth')
+              }, f'{save_path}/model_files/{model_name}.pth')
             best_iou = mean_iou
             print(f'Epoch {epoch+1} checkpoint is saved.')
 
     # Save the final model
-    torch.save(model.state_dict(), f'{save_path}/{model_name}_model.pth')
+    # torch.save(model.state_dict(), f'{save_path}/{model_name}_model.pth')
 
     print(f'Total training time: {time.time()-start_time:4f}s')
 
@@ -304,7 +304,7 @@ if __name__ == "__main__":
     for key, value in metrics.items():
         print(key, len(value))
 
-    filename = f'{SAVE_PATH}/{PRETRAIN_DATASET}_{LOSS_FUNC}_{DEV_SIZE}.json'
+    filename = f'{SAVE_PATH}/json_result/{PRETRAIN_DATASET}_{LOSS_FUNC}_{DEV_SIZE}.json'
 
     # Writing the dictionary to a file in JSON format
     with open(filename, 'w') as f:
